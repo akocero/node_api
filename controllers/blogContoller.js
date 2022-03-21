@@ -1,55 +1,47 @@
 const Blog = require("../models/blog");
 
-const blog_index = (req, res) => {
-	Blog.find()
-		.sort({ createdAt: -1 })
-		.then((result) => {
-			// res.send(result);
-			// let blogs = result;
-			res.render("index", { title: "Home", blogs: result });
-		})
-		.catch((err) => {
-			console.log(err);
-		});
+const blog_index = async (req, res) => {
+	try {
+		const blogs = await Blog.find().sort({ createdAt: -1 });
+		res.render("index", { title: "Home", blogs });
+	} catch (err) {
+		console.log(err);
+	}
 };
 
-const blog_store = (req, res) => {
-	const blog = new Blog(req.body);
-
-	blog.save()
-		.then(() => {
-			res.redirect("/blogs");
-		})
-		.catch((err) => {
-			console.log(err);
-		});
+const blog_store = async (req, res) => {
+	const { title, snippet, body } = req.body;
+	try {
+		await Blog.create({ title, snippet, body });
+		res.redirect("/blogs");
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 const blog_create = (req, res) => {
 	res.render("create", { title: "Create a new blog" });
 };
 
-const blog_show = (req, res) => {
+const blog_show = async (req, res) => {
 	const id = req.params.id;
-	Blog.findById(id)
-		.then((result) => {
-			// res.send(result);
-			res.render("details", { title: "Details", blog: result });
-		})
-		.catch((err) => {
-			res.render("404", { title: "Page not found" });
-		});
+	try {
+		const blog = await Blog.findById(id);
+		res.render("details", { title: "Details", blog });
+	} catch (err) {
+		res.render("404", { title: "Page not found" });
+	}
 };
 
-const blog_destroy = (req, res) => {
+const blog_destroy = async (req, res) => {
 	const id = req.params.id;
-	Blog.findByIdAndDelete(id)
-		.then((result) => {
-			res.json({ redirect: "/blogs" });
-		})
-		.catch((err) => {
-			console.log(err);
-		});
+
+	try {
+		await Blog.findByIdAndDelete(id);
+		res.json({ redirect: "/blogs" });
+	} catch (err) {
+		console.log(err);
+	}
 };
 
 module.exports = {
