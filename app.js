@@ -3,19 +3,18 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const blogRoutes = require("./routes/blogRoutes");
 const taskRoutes = require("./routes/taskRoutes");
+const dotenv = require("dotenv").config();
 // express app
 const app = express();
-const dbURI =
-	"mongodb+srv://user1:Password1@cluster0.difxa.mongodb.net/node-tuts?retryWrites=true&w=majority";
-
+const dbURI = process.env.MONGODB_URI;
 mongoose
 	.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 	.then((result) => {
 		console.log("Connected");
-		app.listen(3000);
+		app.listen(process.env.PORT || 5000);
 	})
 	.catch((err) => {
-		console.log("Error");
+		console.log(err);
 	});
 // listen for requests
 
